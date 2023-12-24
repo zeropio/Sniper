@@ -14,8 +14,5 @@ int main(int argc, char* argv[]) {
     const char* filename = argv[1];
     parser_bin(filename);
 
-    // Searching (TODO)
-
-
     return 0;
 }

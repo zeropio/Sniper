@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include "parser.h"
+#include "sniper.h"
 
 void parser_bin(const char* filename) {
     HANDLE file = nullptr;
@@ -70,11 +71,14 @@ void parser_bin(const char* filename) {
     }
 
     for (const auto& execSection : executableSections) {
-        std::cout << "Contents of section " << execSection->Name << ":" << std::endl;
-
         // Calculate the offset from the beginning of the file data
         DWORD sectionOffset = execSection->PointerToRawData;
         DWORD sectionSize = execSection->SizeOfRawData;
+
+        // Verbose
+        std::cout << "Section name: " << execSection->Name << std::endl;
+        std::cout << "Section offset: " << sectionOffset << std::endl;
+        std::cout << "Section size: " << sectionSize << std::endl;
 
         // Print the content of the section
         for (DWORD offset = 0; offset < sectionSize; offset++) {
@@ -83,7 +87,7 @@ void parser_bin(const char* filename) {
             sectionContent += hexValue;
         }
 
-        std::cout << sectionContent << std::endl;
+        sniper(sectionContent);
         sectionContent.clear();
     }
 
