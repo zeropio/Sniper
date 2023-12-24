@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include "parser.h"
 using namespace std;
 
@@ -13,18 +12,10 @@ int main(int argc, char* argv[]) {
 
     // Open and check file
     const char* filename = argv[1];
-    ifstream binary(filename, ios::binary);
-
-    if (!binary) {
-        cerr << "Error opening file: " << filename << endl;
-        return 1;
-    }
-
-    // Parsing
-    parser_bin(hexdump(binary));
+    parser_bin(filename);
 
     // Searching (TODO)
 
-    binary.close();
+
     return 0;
 }

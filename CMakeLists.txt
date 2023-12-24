@@ -13,4 +13,6 @@ add_executable(Sniper
         src/parser.h
         src/scanner.cpp
         src/scanner.h
+        src/sniper.cpp
+        src/sniper.h
 )

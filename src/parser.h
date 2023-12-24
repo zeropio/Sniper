@@ -4,7 +4,6 @@
 #include <fstream>
 using namespace std;
 
-basic_string<char> hexdump(ifstream& inputFile);
-void parser_bin(basic_string<char>); //TODO
+void parser_bin(const char*);
 
 #endif //SNIPER_PARSER_H
