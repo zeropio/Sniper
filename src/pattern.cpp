@@ -1,52 +1,75 @@
 #include "common.h"
 #include "pattern.h"
 
-int validation(const char* opcodes) {
-    char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-                  'B', 'C', 'D', 'E', 'F'};
+enum ValidationResult {
+    OPCODE,
+    WILDCARD,
+    INVALID
+};
+
+ValidationResult validation(const char* opcodes) {
+    char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     char wildcards[] = {'?', '*'};
 
-    // Check if the opcodes pointer is not null
+    bool foundWildcard = false;
+    bool foundValidOpcode = false;
+
+    // Check for null ptr
     if (opcodes == nullptr) {
         std::cerr << "Error: opcodes pointer is null." << std::endl;
-        return 1;
+        return INVALID;
     }
 
-    // Iterate through each character in the string until the null character
     for (const char* ptr = opcodes; *ptr != '\0'; ++ptr) {
         bool isValidHexChar = false;
-        bool isValidWildcardChar = false;
 
-        // Check if the current character is a valid hex character
+        // Check for hex values on input
         for (char c : hex) {
             if (toupper(*ptr) == c) {
                 isValidHexChar = true;
+                foundValidOpcode = true;
                 break;
             }
         }
 
-        // Check if the current character is a valid wildcard character
+        // Check for wildcards values on input
         for (char w : wildcards) {
-            if (toupper(*ptr) == w) {
-                isValidWildcardChar = true;
+            if (*ptr == w) {
+                foundWildcard = true;
                 break;
             }
         }
 
-        // If the character is not a valid hex value or wildcard, return an error code
-        if (!isValidHexChar && !isValidWildcardChar) {
+        // Final check
+        if (!isValidHexChar && !foundWildcard) {
             std::cerr << "Error: " << *ptr << " is not a valid hex value or wildcard." << std::endl;
-            return 1;
+            return INVALID;
         }
     }
 
-    return 0;
-};
+    if (foundWildcard) {
+        return WILDCARD;
+    } else if (foundValidOpcode) {
+        return OPCODE;
+    } else {
+        // If no valid opcodes or wildcards are found, return INVALID
+        return INVALID;
+    }
+}
 
 void pattern_creation(const char* opcodes) {
-    if (validation(opcodes) == 1) {
+    ValidationResult result = validation(opcodes);
+
+    if (result == INVALID) {
         return;
     }
 
-    return;
+    if (result == WILDCARD) {
+        return;
+    }
+
+    if (result == OPCODE) {
+        return;
+    }
+
 };
