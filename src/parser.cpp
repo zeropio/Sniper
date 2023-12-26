@@ -1,6 +1,5 @@
 #include "common.h"
 #include "parser.h"
-#include "sniper.h"
 
 std::vector<SectionInfo> parser_bin(const char* filename) {
     HANDLE file = nullptr;

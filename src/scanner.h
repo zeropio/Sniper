@@ -1,6 +1,8 @@
 #ifndef SNIPER_SCANNER_H
 #define SNIPER_SCANNER_H
 
-char* scanner();
+#include "common.h"
+
+void scanner(std::vector<SectionInfo>, const char*);
 
 #endif //SNIPER_SCANNER_H

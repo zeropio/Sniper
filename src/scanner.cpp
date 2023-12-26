@@ -1,5 +1,5 @@
 #include "scanner.h"
 
-char* scanner() {
+void scanner(std::vector<SectionInfo>, const char*) {
 
-}
+};
