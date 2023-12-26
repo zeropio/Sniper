@@ -1,18 +1,19 @@
-#include <iostream>
+#include "common.h"
 #include "parser.h"
-using namespace std;
+#include "scanner.h"
 
 int main(int argc, char* argv[]) {
+    std::vector<SectionInfo> sections;
 
     // Check user input file
     if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " filename" << endl;
+        std::cerr << "Usage: " << argv[0] << " filename" << std::endl;
         return 1;
     }
 
     // Open and check file
     const char* filename = argv[1];
-    parser_bin(filename);
+    sections = parser_bin(filename);
 
     return 0;
 }

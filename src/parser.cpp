@@ -1,11 +1,8 @@
-#include <iostream>
-#include <Windows.h>
-#include <vector>
-#include <cstdint>
+#include "common.h"
 #include "parser.h"
 #include "sniper.h"
 
-void parser_bin(const char* filename) {
+std::vector<SectionInfo> parser_bin(const char* filename) {
     HANDLE file = nullptr;
     DWORD fileSize = 0, bytesRead = 0;
     LPVOID fileData = nullptr;  // Change the type to LPVOID
@@ -14,6 +11,7 @@ void parser_bin(const char* filename) {
     PIMAGE_SECTION_HEADER sectionHeader = nullptr, importSection = nullptr;
     std::vector<PIMAGE_SECTION_HEADER> executableSections;
     std::string sectionContent;
+    std::vector<SectionInfo> sections;
 
     // Open and check
     file = CreateFileA(filename, GENERIC_READ, 0,
@@ -21,7 +19,7 @@ void parser_bin(const char* filename) {
                        FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file == INVALID_HANDLE_VALUE) {
         std::cerr << "Error opening file " << filename << ". Error code: " << GetLastError() << std::endl;
-        return;
+        return std::vector<SectionInfo>();;
     }
 
     // Get file size
@@ -29,7 +27,7 @@ void parser_bin(const char* filename) {
     if (fileSize == INVALID_FILE_SIZE) {
         std::cerr << "Error getting file size. Error code: " << GetLastError() << std::endl;
         CloseHandle(file);
-        return;
+        return std::vector<SectionInfo>();;
     }
 
     // Read the entire file into memory
@@ -37,7 +35,7 @@ void parser_bin(const char* filename) {
     if (fileData == nullptr) {
         std::cerr << "Error allocating memory. Error code: " << GetLastError() << std::endl;
         CloseHandle(file);
-        return;
+        return std::vector<SectionInfo>();;
     }
 
     if (!ReadFile(file, fileData, fileSize, &bytesRead,
@@ -45,7 +43,7 @@ void parser_bin(const char* filename) {
         std::cerr << "Error reading file. Error code: " << GetLastError() << std::endl;
         VirtualFree(fileData, 0, MEM_RELEASE);
         CloseHandle(file);
-        return;
+        return std::vector<SectionInfo>();;
     }
 
     // Initializations
@@ -71,29 +69,26 @@ void parser_bin(const char* filename) {
     }
 
     for (const auto& execSection : executableSections) {
+        SectionInfo info;
+
         // Calculate the offset from the beginning of the file data
-        DWORD sectionOffset = execSection->PointerToRawData;
-        DWORD sectionSize = execSection->SizeOfRawData;
+        info.offset = execSection->PointerToRawData;
+        info.size = execSection->SizeOfRawData;
+        info.name = std::string(reinterpret_cast<const char*>(execSection->Name));
 
-        // Verbose
-        std::cout << "Section name: " << execSection->Name << std::endl;
-        std::cout << "Section offset: " << sectionOffset << std::endl;
-        std::cout << "Section size: " << sectionSize << std::endl;
-
-        // Print the content of the section
-        for (DWORD offset = 0; offset < sectionSize; offset++) {
+        for (DWORD offset = 0; offset < info.size; offset++) {
             char hexValue[3];  // Buffer for the two characters and null terminator
-            sprintf(hexValue, "%02X", *(reinterpret_cast<uint8_t*>(fileData) + sectionOffset + offset));
-            sectionContent += hexValue;
+            sprintf(hexValue, "%02X", *(reinterpret_cast<uint8_t*>(fileData) + info.offset + offset));
+            info.content += hexValue;
         }
 
-        sniper(sectionContent);
-        sectionContent.clear();
+        // Add the struct to the vector
+        sections.push_back(info);
     }
-
-
 
     // Release resources
     VirtualFree(fileData, 0, MEM_RELEASE);
     CloseHandle(file);
+
+    return sections;
 }

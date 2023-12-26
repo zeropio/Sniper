@@ -1,9 +1,8 @@
 #ifndef SNIPER_PARSER_H
 #define SNIPER_PARSER_H
 
-#include <fstream>
-using namespace std;
+#include "common.h"
 
-void parser_bin(const char*);
+std::vector<SectionInfo> parser_bin(const char*);
 
 #endif //SNIPER_PARSER_H
