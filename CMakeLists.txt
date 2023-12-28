@@ -14,6 +14,4 @@ add_executable(Sniper
         src/scanner.cpp
         src/scanner.h
         src/common.h
-        src/pattern.cpp
-        src/pattern.h
 )

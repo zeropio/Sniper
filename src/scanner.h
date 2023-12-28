@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-void scanner(std::vector<SectionInfo>, const char*);
+void scanner(const std::vector<SectionInfo>&, const char*);
 
 #endif //SNIPER_SCANNER_H

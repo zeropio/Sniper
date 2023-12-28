@@ -1,7 +1,6 @@
 #include "common.h"
 #include "parser.h"
 #include "scanner.h"
-#include "pattern.h"
 
 int main(int argc, char* argv[]) {
     std::vector<SectionInfo> sections;
@@ -14,14 +13,13 @@ int main(int argc, char* argv[]) {
 
     // Open and check file
     const char* filename = argv[1];
-    const char* opcodes = argv[2];
+    const char* pattern = argv[2];
 
     // Sections and pattern preparation
     sections = parser_bin(filename);
-    pattern_creation(opcodes);
 
     // Scan
-    scanner(sections, opcodes);
+    scanner(sections, pattern);
 
     return 0;
 }
