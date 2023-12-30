@@ -18,14 +18,15 @@ std::vector<SectionInfo> parser_bin(const char* filename) {
                        nullptr, OPEN_EXISTING,
                        FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file == INVALID_HANDLE_VALUE) {
-        std::cerr << "Error opening file " << filename << ". Error code: " << GetLastError() << std::endl;
+        std::cerr << RED << "[-]" << RESET << " Error opening file " << filename << ". Error code: " << GetLastError()
+        << RESET << std::endl;
         return std::vector<SectionInfo>();;
     }
 
     // Get file size
     fileSize = GetFileSize(file, nullptr);
     if (fileSize == INVALID_FILE_SIZE) {
-        std::cerr << "Error getting file size. Error code: " << GetLastError() << std::endl;
+        std::cerr << RED << "[-]" << RESET << " Error getting file size. Error code: " << GetLastError() << RESET << std::endl;
         CloseHandle(file);
         return std::vector<SectionInfo>();;
     }
@@ -33,14 +34,14 @@ std::vector<SectionInfo> parser_bin(const char* filename) {
     // Read the entire file into memory
     fileData = VirtualAlloc(nullptr, fileSize, MEM_COMMIT, PAGE_READWRITE);
     if (fileData == nullptr) {
-        std::cerr << "Error allocating memory. Error code: " << GetLastError() << std::endl;
+        std::cerr << RED << "[-]" << RESET << " Error allocating memory. Error code: " << GetLastError() << RESET << std::endl;
         CloseHandle(file);
         return std::vector<SectionInfo>();;
     }
 
     if (!ReadFile(file, fileData, fileSize, &bytesRead,
                   nullptr)) {
-        std::cerr << "Error reading file. Error code: " << GetLastError() << std::endl;
+        std::cerr << RED << "[-]" << RESET << " Error reading file. Error code: " << GetLastError() << RESET << std::endl;
         VirtualFree(fileData, 0, MEM_RELEASE);
         CloseHandle(file);
         return std::vector<SectionInfo>();;
