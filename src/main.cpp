@@ -17,6 +17,10 @@ int main(int argc, char* argv[]) {
 
     // Sections and pattern preparation
     sections = parser_bin(filename);
+    if (sections.empty()) {
+        std::cerr << "No sections found or error parsing the file." << std::endl;
+        return 1;
+    }
 
     // Scan
     scanner(sections, pattern);
