@@ -8,6 +8,7 @@
 
 struct SectionInfo {
     std::string name;
+    DWORD baseAddress;
     DWORD offset;
     DWORD size;
     std::string content;

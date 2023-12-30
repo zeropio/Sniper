@@ -2,24 +2,19 @@
 #include "common.h"
 #include "scanner.h"
 
-enum ValidationResult {
-    OPCODE,
-    REGEX,
-    INVALID
-};
-
-ValidationResult validation(const char* pattern) {
-    char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+int validation(const char* pattern) {
+    char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                  'A', 'B', 'C', 'D', 'E', 'F'};
     bool foundValidOpcode = false;
 
     // Check for null ptr
     if (pattern == nullptr) {
-        return INVALID;
+        return 1;
     }
 
     try {
         std::regex tmp(pattern);
-        return REGEX;
+        return 0;
     } catch (const std::regex_error&) {
         // Not a valid regex, proceed to check if it's a valid opcode
     }
@@ -37,40 +32,32 @@ ValidationResult validation(const char* pattern) {
         }
 
         if (!isValidHexChar) {
-            return INVALID;
+            return 1;
         }
     }
 
-    return foundValidOpcode ? OPCODE : INVALID;
+    return foundValidOpcode ? 0 : 1;
 }
 
 void scanner(const std::vector<SectionInfo>& sections, const char* pattern) {
-    ValidationResult result = validation(pattern);
+    int result = validation(pattern);
 
 
-    if (result == INVALID) {
+    if (result == 1) {
         std::cout << "Invalid pattern" << '\n';
         return;
     }
 
     for (const auto& section : sections) {
-        if (result == REGEX) {
-            std::regex regexPattern(pattern);
+        std::regex regexPattern(pattern);
+        std::smatch matches;
 
-            // Use regex search to find matches in section content
-            if (std::regex_search(section.content, regexPattern)) {
-                std::cout << "Regex pattern found in section " << section.name << '\n';
-            }
-            // Using continue to ensure all sections are searched
-            continue;
-        }
+        // Use regex search to find matches in section content
+        if (std::regex_search(section.content, matches, regexPattern)) {
+            unsigned int totalOffset = matches.position(0) + section.offset + section.baseAddress;
 
-        if (result == OPCODE) {
-            if (section.content.find(pattern) != std::string::npos) {
-                std::cout << "Opcode found in section!" << '\n';
-            }
-            // Using continue to ensure all sections are searched
-            continue;
+            std::cout << "Opcode found in section " << section.name << std::endl;
+            std::cout << "Pattern found at hex address: 0x" << std::hex << totalOffset << std::endl;
         }
     }
 };

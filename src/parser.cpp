@@ -11,6 +11,7 @@ std::vector<SectionInfo> parser_bin(const char* filename) {
     std::vector<PIMAGE_SECTION_HEADER> executableSections;
     std::string sectionContent;
     std::vector<SectionInfo> sections;
+    uintptr_t baseAddress;
 
     // Open and check
     file = CreateFileA(filename, GENERIC_READ, 0,
@@ -54,6 +55,8 @@ std::vector<SectionInfo> parser_bin(const char* filename) {
     DWORD importDirectoryRVA = imageNTHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT]
             .VirtualAddress;
 
+    baseAddress = imageNTHeaders->OptionalHeader.ImageBase;
+
     // Executable Sections
     for (int i = 0; i < imageNTHeaders->FileHeader.NumberOfSections; i++) {
         sectionHeader = reinterpret_cast<PIMAGE_SECTION_HEADER>(reinterpret_cast<uintptr_t>(imageNTHeaders) +
@@ -71,6 +74,7 @@ std::vector<SectionInfo> parser_bin(const char* filename) {
         SectionInfo info;
 
         // Calculate the offset from the beginning of the file data
+        info.baseAddress = baseAddress;
         info.offset = execSection->PointerToRawData;
         info.size = execSection->SizeOfRawData;
         info.name = std::string(reinterpret_cast<const char*>(execSection->Name));
